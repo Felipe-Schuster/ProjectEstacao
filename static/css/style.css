@@ -1,0 +1,78 @@
+body{
+    background-image: linear-gradient(to left, #2af598 0%, #1dc5e9 100%);
+}
+
+.space {
+    margin: 10px;
+}
+
+.espaco {
+    margin-top: 0;
+    margin-bottom: 0;
+}
+
+.material-icons.md-48 { font-size: 88px; }
+
+.font-family {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    margin: 0;
+    padding: 0;
+}
+.weather-container {
+    width: 400px;
+    background-color: #00aaff;
+    color: #fff;
+    border-radius: 8px;
+    padding: 16px;
+    margin: 20px auto;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+.weather-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+}
+.weather-header h1 {
+    font-size: 2rem;
+    margin: 0;
+}
+.temp {
+    font-size: 3rem;
+    margin: 0;
+}
+.sensation {
+    font-size: 1rem;
+    margin-top: -10px;
+}
+.info {
+    margin: 16px 0;
+}
+.info span {
+    display: block;
+    margin-bottom: 8px;
+}
+.alerts {
+    display: flex;
+    justify-content: space-between;
+    background-color: #fff;
+    color: #000;
+    padding: 10px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+.alert-item {
+    text-align: center;
+}
+.footer-links {
+    text-align: center;
+    margin-top: 16px;
+}
+.footer-links a {
+    color: #fff;
+    margin: 0 8px;
+    text-decoration: none;
+    font-size: 0.9rem;
+}
+    

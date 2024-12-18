@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  <link rel="stylesheet" href="/static/css/style.css">
+  <link rel="stylesheet" href="/static/materialize/css/materialize.css">
+  <link rel="manifest" href="/static/manifest.json">
+  <title>ClimaVision</title>
+<body>
+    <div class="container mt-4">
+        <h2 class="mt-4 mb-4 ms-3 text-color-primary">Dashboard Publico dos Sensores</h2>
+        <!-- Temperatura Atual e Uso de Água lado a lado -->
+        <div class="row mt-4">
+            <div class="col-md-3">
+                <div class="container container-gradient-style">
+                    <h5 class="text-color-tertiary">Temperatura</h5>
+                    <h6 class="text-center icon-localization"><i class="bi bi-geo-alt-fill"></i></h6>
+                    <h6 class="text-center text-localization">São Miguel do Guaporé</h6>
+                    <div id="temperatureValue" class="text-center fw-bold ms-4 gradient-text">00°</div>
+                    <img class="d-block mx-auto icon-temp" src="{% static img/favicon %}" alt="Ícone do Tempo">
+                </div>
+            </div>
+        </div>
+        <!-- Gráficos de Umidade do Ar e Umidade do Solo lado a lado -->
+        <div class="row mt-4">
+            <div class="col-md-6">
+                <div class="container container-style">
+                    <h5 class="text-color-secondary">Umidade do Ar</h5>
+                    <div id="chart-humidity-air"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+   
+</body>
+</html>
