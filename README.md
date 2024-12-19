@@ -1,9 +1,9 @@
 
 <body>
 
-<h1>Projeto: Estação Meteorológica com Django e ESP32</h1> <!-- tag de titulo-->
+<h1> Estação Meteorológica com Django e ESP32</h1> <!-- tag de titulo-->
 
-<p>Este projeto é uma estação meteorológica completa que coleta dados ambientais (como temperatura, umidade, pressão atmosférica e luminosidade) através de sensores conectados a uma ESP32. Os dados são enviados a um servidor Django, que armazena e exibe as informações em um dashboard com gráficos e relatórios detalhados.</p>
+<p>Este projeto é uma estação meteorológica completa que coleta dados ambientais (como temperatura, umidade, pressão atmosférica) através de sensores conectados a uma ESP32. Os dados são enviados a um servidor Django, que armazena e exibe as informações em um dashboard.</p>
 
 <h2>Índice</h2> <!--tag de subtitulo -->
 <ul>  <!--tag de  lista -->
@@ -25,7 +25,7 @@
 
 <h2 id="arquitetura-do-projeto">Arquitetura do Projeto</h2>
 <ol>
-  <li><strong>ESP32</strong>: Captura dados dos sensores (DHT22, BMP180, LDR/MH-RD) e envia-os ao servidor Django através de requisições HTTP.</li>
+  <li><strong>ESP32</strong>: Captura dados dos sensores (DHT22, BMP280) e envia-os ao servidor Django através de requisições HTTP.</li>
   <li><strong>Django (Servidor)</strong>: Recebe os dados, armazena no banco de dados e disponibiliza visualização em um dashboard web.</li>
   <li><strong>Frontend</strong>: Exibe gráficos e relatórios dos dados coletados, além de fornecer alertas sobre condições específicas (como níveis de luz ou temperatura fora do padrão).</li>
 </ol>
@@ -34,16 +34,16 @@
 <ul>
   <li><strong>Hardware</strong>:
     <ul>
-      <li>ESP32</li>
+      <li>ESP 32</li>
       <li>Sensor de temperatura e umidade (DHT22)</li>
-      <li>Sensor de pressão atmosférica (BMP180)</li>
-      <li>Sensor de luminosidade (LDR/MH-RD)</li>
+      <li>Sensor de pressão atmosférica (BMP280)</li>
+      <li>Sensor de Hall para biruta,anemometro e pluviometro</li>
     </ul>
   </li>
   <li><strong>Software</strong>:
     <ul>
-      <li>Python 3.8+</li>
-      <li>Django 4.0+</li>
+      <li>Python</li>
+      <li>Django</li>
       <li>Bibliotecas de sensores para a ESP32 (usadas com Arduino IDE)</li>
       <li>Biblioteca Django Rest Framework para API</li>
     </ul>
