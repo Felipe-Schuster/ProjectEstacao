@@ -17,10 +17,7 @@ class SensorDataAPIView(APIView):
 
     @api_view(["POST"])
     @token_required
-    def sensor_api(request):
-        """
-        Endpoint para receber dados de sensores via POST.
-        """
+    def sensor_api(request):   
         try:
             serializer = SensorDataSerializer(data=request.data)  # Passa os dados da requisição ao serializer
             if serializer.is_valid():
@@ -38,9 +35,6 @@ class SensorDataAPIView(APIView):
 
 
 def index(request):
-    """
-    View para renderizar o template principal com o último dado registrado.
-    """
     try:
         ultimo_dado = SensorData.objects.latest('timestamp')  # Ordena pelo timestamp e pega o mais recente
     except SensorData.DoesNotExist:
