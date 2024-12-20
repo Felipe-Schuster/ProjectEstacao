@@ -17,8 +17,7 @@ class SensorDataSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("Umidade deve estar entre 0 e 100%.")
         return value
 
-    def validate_pressao_bmp(self, value):
-        pressao = value /100
-        if pressao < 300 or pressao > 1100:
-            raise serializers.ValidationError("Pressão fora do intervalo esperado (300 a 1100 hPa).")
-        return pressao
+    def validade_pressao_bmp(self, value):
+        if value < 800 or value > 1200:
+            raise serializers.ValidationError("Pressão BMP fora do intervalo esperado.")
+        return value
