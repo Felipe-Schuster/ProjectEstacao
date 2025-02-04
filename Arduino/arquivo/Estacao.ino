@@ -35,7 +35,6 @@ volatile int rainPulses = 0;
 float fatorcalibracao = 2.5;
 
 // Funções de interrupção
-void IRAM_ATTR countAnemometerPulse() { anemometerPulses++; }
 void IRAM_ATTR countRainPulse() { rainPulses++; }
 
 // Conexão WiFi
@@ -65,28 +64,38 @@ void inicializarComponentes() {
     pinMode(WIND_DIR_PIN_O, INPUT_PULLUP);
     pinMode(WIND_DIR_PIN_S, INPUT_PULLUP);
 
-    attachInterrupt(digitalPinToInterrupt(ANEMOMETER_PIN), countAnemometerPulse, RISING);
+    // attachInterrupt(digitalPinToInterrupt(ANEMOMETER_PIN), countAnemometerPulse, RISING); // Server para contar os pulsos do anemômetro
     attachInterrupt(digitalPinToInterrupt(RAIN_SENSOR_PIN), countRainPulse, RISING);
 }
 
 // Coleta de dados brutos
-void coletarDados(float &temperatura_dht, float &umidade, float &temperatura_bmp, float &pressao_bmp, unsigned int &anemometro, unsigned int &pluviometro, bool &sensor_vento_N, bool &sensor_vento_L, bool &sensor_vento_O, bool &sensor_vento_S) {
-    temperatura_dht = dht.readTemperature();
-    umidade = dht.readHumidity();
-    temperatura_bmp = bmp.readTemperature();
-    pressao_bmp = bmp.readPressure() / 100;
+void coletarDados(float &temperatura_dht, float &umidade, float &temperatura_bmp, float &pressao_bmp, unsigned int &anemometro, unsigned int &pluviometro, String &direcao_vento) {
+    // Leitura de sensores de temperatura, umidade e pressão
+    temperatura_dht = dht.readTemperature();   // Temperatura do DHT
+    umidade = dht.readHumidity();              // Umidade do DHT
+    temperatura_bmp = bmp.readTemperature();   // Temperatura do BMP280
+    pressao_bmp = bmp.readPressure() / 100;    // Pressão do BMP280 em hPa
 
-    // Pulsos acumulados
+    // Contagem de pulsos do anemômetro
     anemometro = (anemometerPulses * fatorcalibracao);
-    
+
+    // Contagem de pulsos do pluviômetro
     pluviometro = rainPulses;
 
-    // Estados dos sensores de direção do vento
-    sensor_vento_N = digitalRead(WIND_DIR_PIN_N) == HIGH; // HIGH = 1, LOW = 0
-    sensor_vento_L = digitalRead(WIND_DIR_PIN_L) == HIGH;
-    sensor_vento_O = digitalRead(WIND_DIR_PIN_O) == HIGH;
-    sensor_vento_S = digitalRead(WIND_DIR_PIN_S) == HIGH;
+    // Determinar direção do vento com base nos sensores da biruta
+    if (digitalRead(WIND_DIR_PIN_N) == HIGH) {
+        direcao_vento = "N";
+    } else if (digitalRead(WIND_DIR_PIN_L) == HIGH) {
+        direcao_vento = "L";
+    } else if (digitalRead(WIND_DIR_PIN_O) == HIGH) {
+        direcao_vento = "O";
+    } else if (digitalRead(WIND_DIR_PIN_S) == HIGH) {
+        direcao_vento = "S";
+    } else {
+        direcao_vento = "Indefinido"; // Caso nenhum sensor seja ativado
+    }
 }
+
 
 // Envio de dados ao Django
 void enviarDados(float temperatura_dht, float umidade, float temperatura_bmp, float pressao_bmp, float anemometro, unsigned int pluviometro, bool sensor_vento_N, bool sensor_vento_L, bool sensor_vento_O, bool sensor_vento_S) {
@@ -133,7 +142,8 @@ void enviarDados(float temperatura_dht, float umidade, float temperatura_bmp, fl
 // Modo de sono profundo
 void entrarEmSonoProfundo() {
     Serial.println("Entrando em modo de sono profundo.");
-    esp_sleep_enable_timer_wakeup(60e6); // 60 segundos
+     esp_sleep_enable_ext0_wakeup((gpio_num_t)RAIN_SENSOR_PIN, 1); // Acorda com um pulso no pluviômetro
+    esp_sleep_enable_timer_wakeup(900000); // 15 minutos
     esp_deep_sleep_start();
 }
 
@@ -158,7 +168,6 @@ void loop() {
     enviarDados(temperatura_dht, umidade, temperatura_bmp, pressao_bmp, anemometro, pluviometro, sensor_vento_N, sensor_vento_L, sensor_vento_O, sensor_vento_S);
 
     // Reseta os pulsos para a próxima leitura
-    anemometerPulses = 0;
     rainPulses = 0;
 
     entrarEmSonoProfundo();
