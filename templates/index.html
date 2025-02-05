@@ -10,50 +10,68 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"> 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"> 
-     <link rel="stylesheet" href="{% static 'css/style.css' %}"> 
+    <link rel="stylesheet" href="{% static 'css/style.css' %}"> 
     <link rel="stylesheet" href="{% static 'materialize/css/materialize.css' %}">
    
     <style>
         canvas {
             max-width: 300px;
             max-height: 300px;
+            margin: 10px;
+        }
+        .weather-container {
+            background-color: #13d4e2;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        .footer-links {
+            margin-top: 20px;
+        }
+        .footer-links a {
+            color: #007bff;
+            text-decoration: none;
+        }
+        .footer-links a:hover {
+            text-decoration: underline;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Estação Materiologica</h1>
+        <h1>Estação Meteorológica</h1>
         <div class="weather-container">
             <div class="weather-header">
-                <h1>Clima atual</h1>
+                <h2>Clima Atual</h2>
             </div>
-            <div>
-                <p><strong>Temperatura:</strong> {{ ultimo_dado.temperatura_dht }} °C</p>
-            </div>
-            <div>
-                <p><strong>Pressão:</strong> {{ ultimo_dado.pressao_bmp }} hPa</p>                          
-            </div>
-            <div>
-                <p><strong>Umidade:</strong> {{ ultimo_dado.umidade }} %</p>
-            </div>
-            <div>
-                <p><strong>Velocidade do Vento:</strong> {{ ultimo_dado.anamometro }} km/h</p>
-            </div>
-            <div>
-                <p><strong>Direção do Vento:</strong> {{ ultimo_dado.biruta }}</p>
-            </div>
-            <div>
-                <p><strong>Volume de Chuva:</strong> {{ ultimo_dado.pluviometro }} mm</p>
-            </div>
-            <div>
-                <p><strong>Temperatura BMP:</strong> {{ ultimo_dado.temperatura_bmp }} °C</p>
-            </div>
-            
-            
+            {% if ultimo_dado %}
+                <div>
+                    <p><strong>Temperatura:</strong> {{ ultimo_dado.temperatura_dht }} °C</p>
+                </div>
+                <div>
+                    <p><strong>Pressão:</strong> {{ ultimo_dado.pressao_bmp }} hPa</p>                          
+                </div>
+                <div>
+                    <p><strong>Umidade:</strong> {{ ultimo_dado.umidade }} %</p>
+                </div>
+                <div>
+                    <p><strong>Velocidade do Vento:</strong> {{ ultimo_dado.anemometro }} km/h</p>
+                </div>
+                <div>
+                    <p><strong>Direção do Vento:</strong> {{ ultimo_dado.biruta }}</p>
+                </div>
+                <div>
+                    <p><strong>Volume de Chuva:</strong> {{ ultimo_dado.pluviometro }} mm</p>
+                </div>
+                <div>
+                    <p><strong>Temperatura BMP:</strong> {{ ultimo_dado.temperatura_bmp }} °C</p>
+                </div>
+            {% else %}
+                <p>Nenhum dado disponível.</p>
+            {% endif %}
         </div>
-            <div class="footer-links">
-                <a href="https://www.climatempo.com.br/previsao-do-tempo/15-dias/cidade/4763/saomigueldoguapore-ro">Previsão Proximos dias  </a>
-            </div>
+        <div class="footer-links">
+            <a href="https://www.climatempo.com.br/previsao-do-tempo/15-dias/cidade/4763/saomigueldoguapore-ro">Previsão Próximos Dias</a>
         </div>
 
         <div style="display: flex; flex-wrap: wrap; gap: 25px">
@@ -63,9 +81,9 @@
             <canvas id="windChart"></canvas>
             <canvas id="rainChart"></canvas>
             <canvas id="pressaoChart"></canvas>
-           
         </div>
     </div>    
+
     <script>
         // Função para inverter os dados
         function reverseData(data) {
@@ -85,32 +103,27 @@
             const timestamps = data.map(d => new Date(d.timestamp).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }));
             const temperatures = data.map(d => d.temperatura_dht);
             const temperaturesbmp = data.map(d => d.temperatura_bmp);
-            const anamometro = data.map(d => d.wind_speed);
-            const pluviometro = data.map(d => d.rainfall);
+            const anemometro = data.map(d => d.anemometro);
+            const pluviometro = data.map(d => d.pluviometro);
             const pressao = data.map(d => d.pressao_bmp);
             const umidade = data.map(d => d.umidade);
 
-            // Gráfico de Temperatura
-            new Chart(document.getElementById('temperaturedhtChart'), {
+            // Configurações comuns para os gráficos
+            const chartOptions = {
                 type: 'line',
-                data: {
-                    labels: timestamps,
-                    datasets: [{
-                        label: 'Temperatura (°C)',
-                        data: temperaturesbmp,
-                        borderColor: 'rgba(255, 99, 132, 1)',
-                        fill: false,
-                    }]
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
                 }
-            });
+            };
 
-            // Gráfico de Temperatura BMP  
-            new Chart(document.getElementById('temperaturebmpChart'), {
-                type: 'line',
+            // Gráfico de Temperatura DHT
+            new Chart(document.getElementById('temperaturedhtChart'), {
+                ...chartOptions,
                 data: {
                     labels: timestamps,
                     datasets: [{
-                        label: 'Temperatura BMP (°C)',
+                        label: 'Temperatura DHT (°C)',
                         data: temperatures,
                         borderColor: 'rgba(255, 99, 132, 1)',
                         fill: false,
@@ -118,43 +131,15 @@
                 }
             });
 
-            // Gráfico de Velocidade do Vento
-            new Chart(document.getElementById('windChart'), {
-                type: 'line',
+            // Gráfico de Temperatura BMP
+            new Chart(document.getElementById('temperaturebmpChart'), {
+                ...chartOptions,
                 data: {
                     labels: timestamps,
                     datasets: [{
-                        label: 'Velocidade do Vento (m/s)',
-                        data: windSpeeds,
-                        borderColor: 'rgba(255, 99, 132, 1)',
-                        fill: false,
-                    }]
-                }
-            });
-
-            // Gráfico de Chuva
-            new Chart(document.getElementById('rainChart'), {
-                type: 'line',
-                data: {
-                    labels: timestamps,
-                    datasets: [{
-                        label: 'Volume de Chuva (mm)',
-                        data: rainfalls,
-                        borderColor: 'rgba(255, 99, 132, 1)',
-                        fill: false,
-                    }]
-                }
-            });
-
-            // Gráfico de Pressão
-            new Chart(document.getElementById('pressaoChart'), {
-                type: 'line',
-                data: {
-                    labels: timestamps,
-                    datasets: [{
-                        label: 'Pressão (hPa)',
-                        data: pressao,
-                        borderColor: 'rgba(255, 99, 132, 1)',
+                        label: 'Temperatura BMP (°C)',
+                        data: temperaturesbmp,
+                        borderColor: 'rgba(54, 162, 235, 1)',
                         fill: false,
                     }]
                 }
@@ -162,22 +147,64 @@
 
             // Gráfico de Umidade
             new Chart(document.getElementById('umidadeChart'), {
-                type: 'line',
+                ...chartOptions,
                 data: {
                     labels: timestamps,
                     datasets: [{
                         label: 'Umidade (%)',
                         data: umidade,
-                        borderColor: 'rgba(255, 99, 132, 1)',
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        fill: false,
+                    }]
+                }
+            });
+
+            // Gráfico de Velocidade do Vento
+            new Chart(document.getElementById('windChart'), {
+                ...chartOptions,
+                data: {
+                    labels: timestamps,
+                    datasets: [{
+                        label: 'Velocidade do Vento (km/h)',
+                        data: anemometro,
+                        borderColor: 'rgba(153, 102, 255, 1)',
+                        fill: false,
+                    }]
+                }
+            });
+
+            // Gráfico de Chuva
+            new Chart(document.getElementById('rainChart'), {
+                ...chartOptions,
+                data: {
+                    labels: timestamps,
+                    datasets: [{
+                        label: 'Volume de Chuva (mm)',
+                        data: pluviometro,
+                        borderColor: 'rgba(255, 159, 64, 1)',
+                        fill: false,
+                    }]
+                }
+            });
+
+            // Gráfico de Pressão
+            new Chart(document.getElementById('pressaoChart'), {
+                ...chartOptions,
+                data: {
+                    labels: timestamps,
+                    datasets: [{
+                        label: 'Pressão (hPa)',
+                        data: pressao,
+                        borderColor: 'rgba(201, 203, 207, 1)',
                         fill: false,
                     }]
                 }
             });
         }
 
+        // Atualiza os gráficos a cada 5 minutos
         createCharts();
+        setInterval(createCharts, 300000); // 300000 ms = 5 minutos
     </script>
-   
 </body>
 </html>
-

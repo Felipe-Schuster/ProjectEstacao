@@ -1,23 +1,67 @@
-from django.db import models  # Importa o módulo models do Django
-from django.utils import timezone  # Importa o módulo timezone do Django
-
+from django.db import models
+from django.utils import timezone
+from django.core.validators import MinValueValidator, MaxValueValidator
 
 class SensorData(models.Model):
+    """
+    Modelo para armazenar os dados dos sensores.
+    """
+    timestamp = models.DateTimeField(auto_now=True, verbose_name="Data e Hora")
+    temperatura_dht = models.FloatField(
+        verbose_name="Temperatura DHT (°C)",
+        validators=[MinValueValidator(-40), MaxValueValidator(80)]  # Intervalo válido para temperatura
+    )
+    umidade = models.FloatField(
+        verbose_name="Umidade (%)",
+        validators=[MinValueValidator(0), MaxValueValidator(100)]  # Intervalo válido para umidade
+    )
+    temperatura_bmp = models.FloatField(
+        verbose_name="Temperatura BMP (°C)",
+        validators=[MinValueValidator(-40), MaxValueValidator(80)]  # Intervalo válido para temperatura
+    )
+    pressao_bmp = models.FloatField(
+        verbose_name="Pressão BMP (hPa)",
+        validators=[MinValueValidator(800), MaxValueValidator(1200)]  # Intervalo válido para pressão
+    )
+    anemometro = models.FloatField(
+        verbose_name="Velocidade do Vento (m/s)",
+        validators=[MinValueValidator(0)]  # Velocidade não pode ser negativa
+    )
+    biruta = models.CharField(
+        max_length=1,
+        verbose_name="Direção do Vento",
+        choices=[('N', 'Norte'), ('S', 'Sul'), ('L', 'Leste'), ('O', 'Oeste')]  # Opções válidas
+    )
+    pluviometro = models.FloatField(
+        verbose_name="Volume de Chuva (mm)",
+        validators=[MinValueValidator(0)]  # Volume não pode ser negativo
+    )
 
-    timestamp = models.DateTimeField(auto_now=True)  # Armazena a data e hora da leitura
-    temperatura_dht = models.FloatField() # Armazena a temperatura do sensor DHT
-    umidade = models.FloatField() # Armazena a umidade do sensor DHT
-    temperatura_bmp = models.FloatField() # Armazena a temperatura do sensor BMP
-    pressao_bmp = models.FloatField() # Armazena a pressão do sensor BMP
-    anemometro = models.FloatField() # Armazena a velocidade do vento em m/s
-    biruta = models.TextField() # Armazena a direção do vento
-    pluviometro = models.FloatField() # Armazena a quantidade de  chuva em mm
-   
     def __str__(self):
-        return f"Leitura: {self.timestamp, self.temperatura_dht, self.umidade, self.temperatura_bmp, self.pressao_bmp, self.anemometro, self.biruta, self.pluviometro}"
+        """
+        Retorna uma representação legível do objeto.
+        """
+        return f"Leitura em {self.timestamp}: {self.temperatura_dht}°C, {self.umidade}%, {self.pressao_bmp}hPa"
+
+    class Meta:
+        verbose_name = "Dado do Sensor"
+        verbose_name_plural = "Dados dos Sensores"
+        ordering = ['-timestamp']  # Ordena os registros por timestamp decrescente
+
 
 class Configuracao(models.Model):
-    token = models.CharField(max_length=255)
+    """
+    Modelo para armazenar configurações do sistema.
+    """
+    token = models.CharField(max_length=255, verbose_name="Token de Autenticação")
+    descricao = models.CharField(max_length=255, verbose_name="Descrição", blank=True, null=True)
 
     def __str__(self):
-        return f"Configuração: {self.token}"
+        """
+        Retorna uma representação legível do objeto.
+        """
+        return f"Configuração: {self.descricao or 'Sem descrição'}"
+
+    class Meta:
+        verbose_name = "Configuração"
+        verbose_name_plural = "Configurações"
