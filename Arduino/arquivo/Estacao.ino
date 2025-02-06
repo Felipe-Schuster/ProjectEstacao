@@ -142,7 +142,6 @@ void enviarDados(float temperatura_dht, float umidade, float temperatura_bmp, fl
 // Modo de sono profundo
 void entrarEmSonoProfundo() {
     Serial.println("Entrando em modo de sono profundo.");
-     esp_sleep_enable_ext0_wakeup((gpio_num_t)RAIN_SENSOR_PIN, 1); // Acorda com um pulso no pluviômetro
     esp_sleep_enable_timer_wakeup(900000); // 15 minutos
     esp_deep_sleep_start();
 }

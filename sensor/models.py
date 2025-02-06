@@ -3,9 +3,7 @@ from django.utils import timezone
 from django.core.validators import MinValueValidator, MaxValueValidator
 
 class SensorData(models.Model):
-    """
-    Modelo para armazenar os dados dos sensores.
-    """
+    
     timestamp = models.DateTimeField(auto_now=True, verbose_name="Data e Hora")
     temperatura_dht = models.FloatField(
         verbose_name="Temperatura DHT (°C)",
@@ -38,9 +36,7 @@ class SensorData(models.Model):
     )
 
     def __str__(self):
-        """
-        Retorna uma representação legível do objeto.
-        """
+      
         return f"Leitura em {self.timestamp}: {self.temperatura_dht}°C, {self.umidade}%, {self.pressao_bmp}hPa"
 
     class Meta:
@@ -48,18 +44,14 @@ class SensorData(models.Model):
         verbose_name_plural = "Dados dos Sensores"
         ordering = ['-timestamp']  # Ordena os registros por timestamp decrescente
 
-
+# ClimaTempo API
 class Configuracao(models.Model):
-    """
-    Modelo para armazenar configurações do sistema.
-    """
+    
     token = models.CharField(max_length=255, verbose_name="Token de Autenticação")
     descricao = models.CharField(max_length=255, verbose_name="Descrição", blank=True, null=True)
 
     def __str__(self):
-        """
-        Retorna uma representação legível do objeto.
-        """
+        
         return f"Configuração: {self.descricao or 'Sem descrição'}"
 
     class Meta:
